@@ -120,18 +120,22 @@ def train_nnet(nnet: nn.Module, states_nnet: List[np.ndarray], outputs: np.ndarr
 
 # pytorch device
 def get_device() -> Tuple[torch.device, List[int], bool]:
-    device: torch.device = torch.device("cpu")
+    device: torch.device = torch.device("mps")
     devices: List[int] = get_available_gpu_nums()
     on_gpu: bool = False
     if devices and torch.cuda.is_available():
         device = torch.device("cuda:%i" % 0)
+        on_gpu = True
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
         on_gpu = True
 
     return device, devices, on_gpu
 
 
 # loading nnet
-def load_nnet(model_file: str, nnet: nn.Module, device: torch.device = None) -> nn.Module:
+# originally "torch.device = None"
+def load_nnet(model_file: str, nnet: nn.Module, device: torch.device = torch.device("mps")) -> nn.Module:
     # get state dict
     if device is None:
         state_dict = torch.load(model_file)

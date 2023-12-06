@@ -486,7 +486,8 @@ def bwas_cpp(args, env: Environment, states: List[State], results_file: str):
         raise ValueError("Unknown c++ environment: %s" % args.env)
 
     # start heuristic proc
-    num_parallel: int = len(os.environ['CUDA_VISIBLE_DEVICES'].split(","))
+#    num_parallel: int = len(os.environ['CUDA_VISIBLE_DEVICES'].split(","))
+    num_parallel: int = 1
     device, devices, on_gpu = nnet_utils.get_device()
     heur_fn_i_q, heur_fn_o_qs, heur_procs = nnet_utils.start_heur_fn_runners(num_parallel, args.model_dir, device,
                                                                              on_gpu, env, all_zeros=False,
