@@ -1,9 +1,9 @@
 ### Cube3
 
 ###### Train cost-to-go function
-python ctg_approx/avi.py --env cube3 --states_per_update 50000 --batch_size 1000 --nnet_name cube3 --max_itrs 1000 --loss_thresh 0.06 --back_max 10 --num_update_procs 10
+python ctg_approx/avi.py --env cube3 --states_per_update 50000 --batch_size 100 --nnet_name cube3 --max_itrs 1000 --loss_thresh 0.06 --back_max 10 --num_update_procs 10
 cp -r saved_models/cube3/current/* saved_models/cube3/target/  # manually update target network
-python ctg_approx/avi.py --env cube3 --states_per_update 50000 --batch_size 1000 --nnet_name cube3 --max_itrs 1200 --loss_thresh 0.06 --back_max 10 --num_update_procs 10
+python ctg_approx/avi.py --env cube3 --states_per_update 50000 --batch_size 100 --nnet_name cube3 --max_itrs 1200 --loss_thresh 0.06 --back_max 10 --num_update_procs 10
 
 ###### Solve with A* search, use --verbose for more information
 python search_methods/astar.py --verbose --states data/cube3/test/data_0.pkl --model saved_models/cube3/current/ --env cube3 --weight 0.6 --batch_size 1000 --results_dir results/cube3/ --language cpp --nnet_batch_size 100
