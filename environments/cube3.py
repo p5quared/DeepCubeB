@@ -61,8 +61,45 @@ class Cube3(Environment):
 
     def generate_goal_states(self, num_states: int, np_format: bool = False) -> Union[List[Cube3State], np.ndarray]:
         if np_format:
+            # it uses this one
             goal_np: np.ndarray = np.expand_dims(self.goal_colors.copy(), 0)
-            solved_states: np.ndarray = np.repeat(goal_np, num_states, axis=0)
+            solved_states: np.ndarray = np.repeat(goal_np, 1, axis=0)
+
+            '''
+            secondary_goal_np: np.ndarray = np.expand_dims(self.goal_colors.copy(), 0)
+            secondary_goal_np[:, self.rotate_idxs_new['U1']] = goal_np[:, self.rotate_idxs_old['U1']]
+
+            tertiary_goal_np: np.ndarray = np.expand_dims(self.goal_colors.copy(), 0)
+            tertiary_goal_np[:, self.rotate_idxs_new['F1']] = secondary_goal_np[:, self.rotate_idxs_old['F1']]
+
+            solved_states = np.concatenate((solved_states, secondary_goal_np, tertiary_goal_np), axis=0)
+            '''
+            # Number of states we are adding BEYOND the normal goal state (goal_np)
+            # This is generating states on EVERY call for states
+            # in other words, the states which are generated are not fixed (except goal_np)
+            UNIQUE_STATES = 1
+            MAX_DIST_FOR_STATES = 100
+
+            # uniqueness may vary
+            def getUniqueState():
+                t = goal_np.copy()
+                for _ in range(randrange(1, MAX_DIST_FOR_STATES)):
+                    move: int = randrange(self.get_num_moves())
+                    t, _ = self._move_np(t, move)
+                return t
+
+            # Brilliant naming
+            unique_states = [getUniqueState() for _ in range(UNIQUE_STATES)]
+
+            copies_of_each = int(num_states // UNIQUE_STATES) if UNIQUE_STATES > 0 else 0
+
+            for i in range(UNIQUE_STATES):
+                solved_states: np.ndarray = np.repeat(unique_states[i], num_states//(UNIQUE_STATES+1), axis=0)
+
+            while solved_states.shape[0] < num_states:
+                solved_states = np.concatenate((solved_states, goal_np), axis=0)
+            #solved_states = np.concatenate([np.repeat(unique_states[i], copies_of_each, axis=0) for i in range(len(unique_states))], axis=0)
+
         else:
             solved_states: List[Cube3State] = [Cube3State(self.goal_colors.copy()) for _ in range(num_states)]
 
